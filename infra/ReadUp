@@ -9,8 +9,8 @@ ABOUT INFRA: We would be provisioning total 4 EC2 Instances.
              3. 2 workernodes one for myesa application image and another for mysql image
              
 Steps to Follow:
-1. Fork git repo https://github.com/tiwaprat/k8s-Pro.git
-2. Prepare docker image : 
+1. Fork git repo https://github.com/tiwaprat/k8s-Pro.git 
+2. Create docker image and push into your dockerhub repo : 
    * Provision a ubuntu based ec2 instance
    * sudo hostnamectl set buildserver
    * sudo apt update
@@ -20,10 +20,21 @@ Steps to Follow:
    * mkdir EnrichedStudentApp
    * mv -r /k8s-Pro/infra/EnrichedStudentApp . 
    * cd 
-   * cd  EnrichedStudentApp
+   * cd  EnrichedStudentApp     [Verify application.properties file for all env variables these variables will provided as arguments at the time of pod creation]
    * mvn  clean package -U
    * Verify if build is successfull and cd target/ dir do exists with jar file. 
-   
+   * cp target/student-app-1.0.0.jar ~/k8s-Pro/infra/DockerImageBuild/
+   * cd  ~/k8s-Pro/infra/DockerImageBuild/
+   * mv student-app-1.0.0.jar student.jar
+   * sudo docker build -t myesa:2.0 .      [Choose the tag as per your env/choice]
+   * docker login -u awsaug2021   [use your dockerhub user name ]
+   * sudo docker tag myesa:2.0 awsaug2021/myesa:2.0
+   * sudo docker push awsaug2021/myesa:2.0 
+
+   At this point our esa application is backed into docker image and ready to be used. 
+
+
+
 
 
 
