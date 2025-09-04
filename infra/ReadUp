@@ -31,7 +31,7 @@ Steps to Follow:
    * sudo docker tag myesa:2.0 awsaug2021/myesa:2.0
    * sudo docker push awsaug2021/myesa:2.0 
 
-   At this point our esa application is backed into docker image and ready to be used. 
+   At this point our esa application is baked into docker image and ready to be used. 
 
 
 
