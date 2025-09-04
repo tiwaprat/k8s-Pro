@@ -1,0 +1,34 @@
+ABOUT PROJECT: This project outlines all the steps to create a basic kubernetes cluster with infrastructure on AWS EC2 Instances. We will also run a spring boot application (Enhanced Student app) on this cluster to verify setup. 
+
+ABOUT APPLICATION: The Enhanced student App a.k.a "esa" application is at /infra/EnrichedStudentApp/ folder it is a sprint boot based application. On access application shows a single html page which can record student information and can show on the same page. We can create and delere the records.
+                   in mysql database.  
+
+ABOUT INFRA: We would be provisioning total 4 EC2 Instances. 
+             1. for controlplan components.   
+             2. Building docker images and pushing them into dockerhub (buildserver)
+             3. 2 workernodes one for myesa application image and another for mysql image
+             
+Steps to Follow:
+1. Fork git repo https://github.com/tiwaprat/k8s-Pro.git
+2. Prepare docker image : 
+   * Provision a ubuntu based ec2 instance
+   * sudo hostnamectl set buildserver
+   * sudo apt update
+   * sudo apt install openjdk-17-jdk maven  -y 
+   * sudo apt install docker.io -y 
+   * git clone https://github.com/tiwaprat/k8s-Pro.git
+   * mkdir EnrichedStudentApp
+   * mv -r /k8s-Pro/infra/EnrichedStudentApp . 
+   * cd 
+   * cd  EnrichedStudentApp
+   * mvn  clean package -U
+   * Verify if build is successfull and cd target/ dir do exists with jar file. 
+   
+
+
+
+
+
+   Note: command to copy files and folders fron ec2 to local machine 
+   scp -i /path/to/key.pem ec2-user@<EC2_PUBLIC_IP>:/remote/path/to/file /local/path
+   Ex:  scp -i "key.pem" -r ubuntu@ec2-54-157-210-46.compute-1.amazonaws.com:/home/ubuntu/EnrichedStudentApp/ .
