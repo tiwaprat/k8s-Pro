@@ -60,4 +60,25 @@ sudo apt-get install -y kubelet kubeadm kubectl
 sudo apt-mark hold kubelet kubeadm kubectl
 sudo systemctl enable --now kubelet
 
+# Commands only to be run on control-plane node
+echo "---------------------- Initializing cluster -------------------"
+sudo kubeadm init --pod-network-cidr=10.244.0.0/16
 
+sudo mkdir -p $HOME/.kube
+sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+sudo chown $(id -u):$(id -g) $HOME/.kube/config
+
+echo "---------------------- Installing CNI plugin -------------------"
+kubectl apply -f https://github.com/flannel-io/flannel/releases/latest/download/kube-flannel.yml
+
+echo "----------------Setting up kubectl alias and commandline auto complition---------" 
+
+sudo apt update
+sudo apt install bash-completion
+echo "source <(kubectl completion bash)" >> ~/.bashrc
+echo "alias k=kubectl" >> ~/.bashrc
+echo "complete -F __start_kubectl k" >> ~/.bashrc
+source ~/.bashrc
+
+echo "================= Kubernetes Setup Completed ================="
+date

@@ -20,7 +20,7 @@ Steps to Follow:
    * mkdir EnrichedStudentApp
    * mv -r /k8s-Pro/infra/EnrichedStudentApp . 
    * cd 
-   * cd  EnrichedStudentApp     [Verify application.properties file for all env variables these variables will provided as arguments at the time of pod creation]
+   * cd  EnrichedStudentApp     [Verify application.properties file for all env variables these variables will provided as arguments at the time   of pod creation]
    * mvn  clean package -U
    * Verify if build is successfull and cd target/ dir do exists with jar file. 
    * cp target/student-app-1.0.0.jar ~/k8s-Pro/infra/DockerImageBuild/
@@ -33,13 +33,45 @@ Steps to Follow:
 
    At this point our esa application is baked into docker image and ready to be used. 
 
+------------------------------CLUSTER SETUP--------------------------------------------------------
+NOTE: IN THIS EX I HAVE CHANGED HOSTNAME OF ALL NODES WHICH HAS CREATED ISSUE AT THE TIME OF LB SERVICE CREATION. WHICH GOT RESOLVED WITH NODE PATCHING. TO AVOID THIS SKIP CHANGING HOSTNAME ATLEAST BEFORE  JOINING K CLUSTER. THIS IS  ONLY FOR CCM MANAGED BY USER ON EC2.  
+
+Master node provisioning : 
+*
 
 
 
+------------------  PROVISIONING LOADBALACER SERVICE--------------------------------
+Unlike nodeport and clusterIp service Loadbalancer service required CCM (Cloud controler manager) to be installed and run as pod on control-paln node. Incase of EKS we dont need CCM configuration beacuse that is already done for us. Since our cluster is on EC2 so we have to manage this control plan component. 
+CCM runs as a ds pod only on controlplan node as calls cloud api on behalf of kubernetes to provision ELB when we create LB service. this require specific IAM roles for EC2 instance where control plan is configured. I have already created IAM policy and IAM role  with name "Kubernetes-CloudControlerManager" inside script folder policy is documented.ccm-pod.yaml is also available and can be edited as per your cluster. the version of AWS CCM shloud be same as of cluster version. 
+We also have to tag Ec2 instances (mn + wn) and subnets 
+
+key = kubernetes.io/cluster/<name of cluster, I used esa>
+value = owned
+We also have to use - --controllers=*,-route  incase we are using external cni plugin like calico or flannel. but If we are using AWS cni we have to give cluster cidr that pod cidr
+
+Now use ccm-pod.yaml and  provision ds : Hopefully it will run without any issue
+Finally ccm pod created but after that when I tried to create loadbalancer service I faced issue. My lb service was in pending state. why ? because I  have changed node names using hostnamectl long before creating k8s cluster as master , worker1 , worker2 ...these names kubelet has registered but EC2 metadata is still using old names. And CCM need these names to be same. So I had use this patch on each node object.
+ProviderID:                   aws:///us-east-1d/i-02ff08f41fbdcb280   [change subnet and ec2 id as per your instance]
+Suggestion: Do not change hostname or change after joinig the node to cluster. 
+
+Finally lb is provisioned. If you face any issue provisioning lb always check the logs of ccm pod. Sometimes we might need to restart couple of pods to get things work. On sucessful lb provision 
+
+1. target instance will be in healthy state 
+2. node public or private ip + node port [Nodeport which get created along with lb] will be accessible
+3. Loadbalacer DNS[something like this : http://ab81814b66d2c4082a00d74ae3235bd0-1543644628.us-east-1.elb.amazonaws.com/ ] will be accessible
+4. In this usecase my app is running only on one node so LB is basically sending packets to only one node. 
 
 
 
+----------------------------------------------------------NOTES-------------------------------------------------------------------------
 
    Note: command to copy files and folders fron ec2 to local machine 
    scp -i /path/to/key.pem ec2-user@<EC2_PUBLIC_IP>:/remote/path/to/file /local/path
    Ex:  scp -i "key.pem" -r ubuntu@ec2-54-157-210-46.compute-1.amazonaws.com:/home/ubuntu/EnrichedStudentApp/ .
+   k run test --rm --image busybox -i -- /bin/sh    To test dns resolution
+   wget -O- https://ec2.us-east-1.amazonaws.com
+
+   Some times if the load balancer service is not getting deleted , edit service remove finalizer section and then run 
+   kubectl delete svc <service-name> --grace-period=0 --force
+  
