@@ -37,7 +37,25 @@ Steps to Follow:
 NOTE: IN THIS EX I HAVE CHANGED HOSTNAME OF ALL NODES WHICH HAS CREATED ISSUE AT THE TIME OF LB SERVICE CREATION. WHICH GOT RESOLVED WITH NODE PATCHING. TO AVOID THIS SKIP CHANGING HOSTNAME ATLEAST BEFORE  JOINING K CLUSTER. THIS IS  ONLY FOR CCM MANAGED BY USER ON EC2.  
 
 Master node provisioning : 
-*
+* spinup 2vcpu , 2GB RAM ubuntu image. 
+* SG Open inbounds ports :
+* clone repository : https://github.com/tiwaprat/k8s-Pro.git
+* Use controlPlaneNode.sh script to setup cluster 
+* Note token details. This will be used in adding worker nodes 
+* Hostname change (optional)
+
+WorkerNodeProvisioning : 
+* spinup 1vcpu, 2GB RAM ubuntu image in same VPC 
+* SG Open inbounds ports :
+* use workerNode.sh script to setup run time and k8s. 
+* use token from master node to join cluster
+* Hostname change optional
+
+Creating kubernetes objects:
+* Create dbsecret,  mysql pod , Myqldb service, dockerLoginObject , myesa app pod, node or loadbalancer service.
+* Verify each service if they have correct end points. 
+* Check  health of target nodes of LoadBalancer. 
+* Verify cluster setup and myesa app using LB DNS
 
 
 
