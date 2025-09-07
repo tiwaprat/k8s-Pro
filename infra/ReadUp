@@ -52,7 +52,7 @@ WorkerNodeProvisioning :
 * Hostname change optional
 
 Creating kubernetes objects:
-* Create dbsecret,  mysql pod , Myqldb service, dockerLoginObject , myesa app pod, node or loadbalancer service.
+* Create dbsecret,  mysql pod , Myqldb service, dockerLoginObject , myesa app pod, node create CCM pod for loadbalancer service. 
 * Verify each service if they have correct end points. 
 * Check  health of target nodes of LoadBalancer. 
 * Verify cluster setup and myesa app using LB DNS
