@@ -1,0 +1,41 @@
+Here are steps to provision kubernetes cluster with one master and 2 worker nodes. Iwll create 2 nginx pods each on one node.
+Will create loadbalancer service on AWS and access application using loadbalancer DNS URL. 
+
+------------------------EC2 nodes --------------------------------------------
+1. Provision one control plan node : t3.small (2vCPU, 2GB RAM)
+2. Provision 2 worker node :t2.micro (1vCPU, 2GB RAM)
+
+3. Changing hostname 
+   run hostnamectl set hostname controlplan/workernode1/workernode2
+4. One controlPlan node    
+   git clone https://github.com/tiwaprat/k8s-Pro.git   use only infra-01 folder this file is avalable in infra-01 folder only
+
+-----------------Cluster setUp--------------------------------------------------   
+5. Run scripts controlplaneNode.sh or workerNode.sh as per node. 
+6. run below command only on controlplan node 
+   source ~/.bashrc
+
+---------------setup CCM ds---------------------
+6. Add below tag to all worker and master nodes and their respective subnets 
+
+key = kubernetes.io/cluster/<name of app/nginx>
+value = owned
+
+7. add policy "kubernetes-CloudControlManager" to only controlplane node (EC2)
+8. Patch all nodes with providerid : 
+ex: 
+ kubectl patch node ip-172-31-20-202 -p '{"spec":{"providerID":"aws:///us-east-id/i-010e905500aac7fce"}}'
+
+
+9. On controlplan node run : "k create -f ccm-pod.yaml"  to create ccm  ds 
+
+------------- Deploy nginx pod --------------------------------------------
+10. k create -f nginx.yaml   
+
+-------------Create Load balancer service------------------
+11. k create -f nginx-lb.yaml 
+12. Varify setup using DNS URL of loadbalancer
+
+
+
+

@@ -82,4 +82,3 @@ echo "Bash completion and alias applied."
 
 echo "================= Kubernetes Setup Completed [PLEASE MANUALLY RUN : source ~/.bashrc ] ================="
 date
-

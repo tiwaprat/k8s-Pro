@@ -1,7 +1,6 @@
 ABOUT PROJECT: This project outlines all the steps to create a basic kubernetes cluster with infrastructure on AWS EC2 Instances. We will also run a spring boot application (Enhanced Student app) on this cluster to verify setup. 
 
-ABOUT APPLICATION: The Enhanced student App a.k.a "esa" application is at /infra/EnrichedStudentApp/ folder it is a sprint boot based application. On access application shows a single html page which can record student information and can show on the same page. We can create and delere the records.
-                   in mysql database.  
+ABOUT APPLICATION: The Enhanced student App a.k.a "esa" application is at /infra/EnrichedStudentApp/ folder it is a sprint boot based application. On access application shows a single html page which can record student information and can show on the same page. We can create and delere the records.in mysql database.  
 
 ABOUT INFRA: We would be provisioning total 4 EC2 Instances. 
              1. for controlplan components.   
@@ -82,7 +81,7 @@ Finally lb is provisioned. If you face any issue provisioning lb always check th
 
 
 
-----------------------------------------------------------NOTES-------------------------------------------------------------------------
+----------------------------------------------------------NOTES-------------------------------------------------------------------
 
    Note: command to copy files and folders fron ec2 to local machine 
    scp -i /path/to/key.pem ec2-user@<EC2_PUBLIC_IP>:/remote/path/to/file /local/path
